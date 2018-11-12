@@ -168,6 +168,8 @@ IRGenModule::IRGenModule(IRGenerator &irgen,
   Int8PtrTy = llvm::Type::getInt8PtrTy(getLLVMContext());
   Int8PtrPtrTy = Int8PtrTy->getPointerTo(0);
   SizeTy = DataLayout.getIntPtrType(getLLVMContext(), /*addrspace*/ 0);
+  RelativeAddressTy = SizeTy;
+  RelativeAddressPtrTy = RelativeAddressTy->getPointerTo();
 
   FloatTy = llvm::Type::getFloatTy(getLLVMContext());
   DoubleTy = llvm::Type::getDoubleTy(getLLVMContext());

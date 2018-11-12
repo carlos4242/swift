@@ -511,14 +511,10 @@ public:
   llvm::IntegerType *Int1Ty;           /// i1
   llvm::IntegerType *Int8Ty;           /// i8
   llvm::IntegerType *Int16Ty;          /// i16
-  union {
-    llvm::IntegerType *Int32Ty;          /// i32
-    llvm::IntegerType *RelativeAddressTy;
-  };
-  union {
-    llvm::PointerType *Int32PtrTy;            /// i32 *
-    llvm::PointerType *RelativeAddressPtrTy;
-  };
+  llvm::IntegerType *Int32Ty;          /// i32
+  llvm::IntegerType *RelativeAddressTy;
+  llvm::PointerType *Int32PtrTy;            /// i32 *
+  llvm::PointerType *RelativeAddressPtrTy;
   llvm::IntegerType *Int64Ty;          /// i64
   union {
     llvm::IntegerType *SizeTy;         /// usually i32 or i64
