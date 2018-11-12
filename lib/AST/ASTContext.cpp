@@ -3050,6 +3050,11 @@ Type ErrorType::get(Type originalType) {
   return entry = new (mem) ErrorType(ctx, originalType, properties);
 }
 
+BuiltinIntegerWidth BuiltinIntegerWidth::pointer(const ASTContext &C) {
+  unsigned RawPointerSize = C.LangOpts.getPointerWidth();
+  return BuiltinIntegerWidth(PointerWidth, RawPointerSize);
+}
+
 BuiltinIntegerType *BuiltinIntegerType::get(BuiltinIntegerWidth BitWidth,
                                             const ASTContext &C) {
   assert(!BitWidth.isArbitraryWidth());
