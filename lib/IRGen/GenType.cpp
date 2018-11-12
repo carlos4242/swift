@@ -392,12 +392,18 @@ static llvm::Value *computeExtraTagBytes(IRGenFunction &IGF, IRBuilder &Builder,
   auto *entryBB = Builder.GetInsertBlock();
   llvm::Value *size = asSizeConstant(IGM, fixedSize);
   auto *returnBB = llvm::BasicBlock::Create(Ctx);
-  size = Builder.CreateTrunc(size, int32Ty); // We know size < 4.
+
+  llvm::Value *truncOrZextSize;
+  if (size->getType()->getScalarSizeInBits() < int32Ty->getScalarSizeInBits()) {
+    truncOrZextSize = Builder.CreateZExt(size, int32Ty);
+  } else {
+    truncOrZextSize = Builder.CreateTrunc(size, int32Ty);
+  }
 
   auto *two = llvm::ConstantInt::get(int32Ty, 2U);
   auto *four = llvm::ConstantInt::get(int32Ty, 4U);
 
-  auto *bits = Builder.CreateMul(size, llvm::ConstantInt::get(int32Ty, 8U));
+  auto *bits = Builder.CreateMul(truncOrZextSize, llvm::ConstantInt::get(int32Ty, 8U));
   auto *casesPerTagBitValue = Builder.CreateShl(one, bits);
 
   auto *numTags = Builder.CreateSub(casesPerTagBitValue, one);
@@ -487,14 +493,20 @@ llvm::Value *FixedTypeInfo::getEnumTagSinglePayload(IRGenFunction &IGF,
 
   Builder.emitBlock(extraTagBitsBB);
 
-  auto *truncSize = Builder.CreateTrunc(size, IGM.Int32Ty);
+  llvm::Value *truncOrZextSize;
+  if (size->getType()->getScalarSizeInBits() < IGM.Int32Ty->getScalarSizeInBits()) {
+    truncOrZextSize = Builder.CreateZExt(size, IGM.Int32Ty);
+  } else {
+    truncOrZextSize = Builder.CreateTrunc(size, IGM.Int32Ty);
+  }
+
   Address caseIndexFromValueSlot = IGF.createAlloca(IGM.Int32Ty, Alignment(4));
   Builder.CreateStore(zero, caseIndexFromValueSlot);
 
   auto *caseIndexFromExtraTagBits = Builder.CreateSelect(
-      Builder.CreateICmpUGE(truncSize, four), zero,
+      Builder.CreateICmpUGE(truncOrZextSize, four), zero,
       Builder.CreateShl(Builder.CreateSub(extraTagBits, one),
-                        Builder.CreateMul(eight, truncSize)));
+                        Builder.CreateMul(eight, truncOrZextSize)));
 
   // TODO: big endian.
   Builder.CreateMemCpy(
@@ -683,15 +695,22 @@ void FixedTypeInfo::storeEnumTagSinglePayload(IRGenFunction &IGF,
   auto *nonPayloadElementIndex = Builder.CreateSub(whichCase, one);
   auto *caseIndex =
       Builder.CreateSub(nonPayloadElementIndex, numExtraInhabitants);
-  auto *truncSize = Builder.CreateTrunc(size, IGM.Int32Ty);
-  auto *isFourBytesPayload = Builder.CreateICmpUGE(truncSize, four);
+
+  llvm::Value *truncOrZextSize;
+  if (size->getType()->getScalarSizeInBits() < IGM.Int32Ty->getScalarSizeInBits()) {
+    truncOrZextSize = Builder.CreateZExt(size, IGM.Int32Ty);
+  } else {
+    truncOrZextSize = Builder.CreateTrunc(size, IGM.Int32Ty);
+  }
+
+  auto *isFourBytesPayload = Builder.CreateICmpUGE(truncOrZextSize, four);
   auto *payloadGE4BB = Builder.GetInsertBlock();
   auto *payloadLT4BB = llvm::BasicBlock::Create(Ctx);
   continueBB = llvm::BasicBlock::Create(Ctx);
   Builder.CreateCondBr(isFourBytesPayload, continueBB, payloadLT4BB);
 
   Builder.emitBlock(payloadLT4BB);
-  auto *payloadBits = Builder.CreateMul(truncSize, eight);
+  auto *payloadBits = Builder.CreateMul(truncOrZextSize, eight);
   auto *extraTagIndex0 = Builder.CreateLShr(caseIndex, payloadBits);
   extraTagIndex0 = Builder.CreateAdd(one, extraTagIndex0);
   auto *payloadIndex0 = Builder.CreateShl(one, payloadBits);
