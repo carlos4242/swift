@@ -322,6 +322,19 @@ namespace swift {
       return llvm::VersionTuple(major, minor, revision);
     }
 
+    /// Returns the platform pointer width.
+    unsigned getPointerWidth() const {
+      if (Target.isArch64Bit()) {
+        return 64;
+      } else if (Target.isArch32Bit()) {
+        return 32;
+      } else if (Target.isArch16Bit()) {
+        return 16;
+      } else {
+        llvm_unreachable("Unhandled pointer width");
+      }
+    }
+
     /// Sets an implicit platform condition.
     void addPlatformConditionValue(PlatformConditionKind Kind, StringRef Value) {
       assert(!Value.empty());
