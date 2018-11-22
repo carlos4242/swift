@@ -2208,6 +2208,9 @@ bb0(%0 : $Optional<MyClass>):
 // CHECK:         return
 sil @remove_trunc_utos_zext_of_and : $@convention(thin) (Builtin.Word) -> (Builtin.Word) {
 bb0(%0 : $Builtin.Word):
+  // This now sometimes fails on a 32-bit iOS simulator (armv7), due to PR20694.
+  // Should the test be changed? Or does it represent valid SIL that could be
+  // produced in some cases on a 32-bit platform and needs to be handled?
   %1 = integer_literal $Builtin.Word, 4611686018427387903
   %2 = builtin "and_Word"(%0 : $Builtin.Word, %1 : $Builtin.Word) : $Builtin.Word
   %3 = builtin "zextOrBitCast_Word_Int64"(%2 : $Builtin.Word) : $Builtin.Int64
