@@ -169,10 +169,10 @@ IRGenModule::IRGenModule(IRGenerator &irgen,
   Int8PtrPtrTy = Int8PtrTy->getPointerTo(0);
   SizeTy = DataLayout.getIntPtrType(getLLVMContext(), /*addrspace*/ 0);
 
-  // for the relative address type, we want to use the int32 bit type
+  // For the relative address type, we want to use the int32 bit type
   // on most architectures, e.g. x86_64, because it produces valid
-  // fixups/relocations, the exception is 16-bit architectures,
-  // so we shorten the relative address type there
+  // fixups/relocations. The exception is 16-bit architectures,
+  // so we shorten the relative address type there.
   if (SizeTy->getBitWidth()<32) {
     RelativeAddressTy = SizeTy;
   } else {

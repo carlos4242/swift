@@ -1365,8 +1365,10 @@ class BuiltinIntegerWidth {
   friend struct llvm::DenseMapInfo<swift::BuiltinIntegerWidth>;
   
   /// Private constructors from a raw symbolic value.
-  explicit BuiltinIntegerWidth(unsigned RawValue) : RawValue(RawValue), RawPointerSize(0) {}
-  explicit BuiltinIntegerWidth(unsigned RawValue, unsigned RawPointerSize) : RawValue(RawValue), RawPointerSize(RawPointerSize) {}
+  explicit BuiltinIntegerWidth(unsigned RawValue)
+    : RawValue(RawValue), RawPointerSize(0) {}
+  explicit BuiltinIntegerWidth(unsigned RawValue, unsigned RawPointerSize)
+    : RawValue(RawValue), RawPointerSize(RawPointerSize) {}
 public:
   BuiltinIntegerWidth() : RawValue(0), RawPointerSize(0) {}
   

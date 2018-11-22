@@ -403,7 +403,10 @@ static llvm::Value *computeExtraTagBytes(IRGenFunction &IGF, IRBuilder &Builder,
   auto *two = llvm::ConstantInt::get(int32Ty, 2U);
   auto *four = llvm::ConstantInt::get(int32Ty, 4U);
 
-  auto *bits = Builder.CreateMul(truncOrZextSize, llvm::ConstantInt::get(int32Ty, 8U));
+  auto *bits = Builder.CreateMul(
+    truncOrZextSize,
+    llvm::ConstantInt::get(int32Ty, 8U));
+  
   auto *casesPerTagBitValue = Builder.CreateShl(one, bits);
 
   auto *numTags = Builder.CreateSub(casesPerTagBitValue, one);
