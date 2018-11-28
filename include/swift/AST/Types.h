@@ -1360,22 +1360,22 @@ class BuiltinIntegerWidth {
   };
   
   unsigned RawValue;
-  unsigned RawPointerSize;
   
   friend struct llvm::DenseMapInfo<swift::BuiltinIntegerWidth>;
   
-  /// Private constructors from a raw symbolic value.
-  explicit BuiltinIntegerWidth(unsigned RawValue) : RawValue(RawValue), RawPointerSize(0) {}
-  explicit BuiltinIntegerWidth(unsigned RawValue, unsigned RawPointerSize) : RawValue(RawValue), RawPointerSize(RawPointerSize) {}
+  /// Private constructor from a raw symbolic value.
+  explicit BuiltinIntegerWidth(unsigned RawValue) : RawValue(RawValue) {}
 public:
-  BuiltinIntegerWidth() : RawValue(0), RawPointerSize(0) {}
+  BuiltinIntegerWidth() : RawValue(0) {}
   
   static BuiltinIntegerWidth fixed(unsigned bitWidth) {
     assert(bitWidth < Least_SpecialValue && "invalid bit width");
     return BuiltinIntegerWidth(bitWidth);
   }
   
-  static BuiltinIntegerWidth pointer(const ASTContext &C);
+  static BuiltinIntegerWidth pointer() {
+    return BuiltinIntegerWidth(PointerWidth);
+  }
 
   static BuiltinIntegerWidth arbitrary() {
     return BuiltinIntegerWidth(ArbitraryWidth);
@@ -1397,22 +1397,26 @@ public:
   bool isArbitraryWidth() const { return RawValue == ArbitraryWidth; }
   
   /// Get the least supported value for the width.
+  ///
+  /// FIXME: This should be build-configuration-dependent.
   unsigned getLeastWidth() const {
     if (isFixedWidth())
       return getFixedWidth();
     if (isPointerWidth())
-      return RawPointerSize;
+      return 32;
     if (isArbitraryWidth())
       return 1;
     llvm_unreachable("impossible width value");
   }
   
   /// Get the greatest supported value for the width.
+  ///
+  /// FIXME: This should be build-configuration-dependent.
   unsigned getGreatestWidth() const {
     if (isFixedWidth())
       return getFixedWidth();
     if (isPointerWidth())
-      return RawPointerSize;
+      return 64;
     if (isArbitraryWidth())
       return ~0U;
     llvm_unreachable("impossible width value");
@@ -1470,7 +1474,7 @@ public:
   
   /// Get the target-pointer-width builtin integer type.
   static BuiltinIntegerType *getWordType(const ASTContext &C) {
-    return get(BuiltinIntegerWidth::pointer(C), C);
+    return get(BuiltinIntegerWidth::pointer(), C);
   }
   
   /// Return the bit width of the integer.  Always returns a non-arbitrary
@@ -1495,11 +1499,15 @@ public:
   }
   
   /// Return the least supported width of the integer.
+  ///
+  /// FIXME: This should be build-configuration-dependent.
   unsigned getLeastWidth() const {
     return Width.getLeastWidth();
   }
   
   /// Return the greatest supported width of the integer.
+  ///
+  /// FIXME: This should be build-configuration-dependent.
   unsigned getGreatestWidth() const {
     return Width.getGreatestWidth();
   }

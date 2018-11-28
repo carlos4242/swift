@@ -603,7 +603,7 @@ static ValueDecl *getDestroyOperation(ASTContext &Context, Identifier Id) {
 }
 
 static ValueDecl *getDestroyArrayOperation(ASTContext &Context, Identifier Id) {
-  auto wordType = BuiltinIntegerType::get(BuiltinIntegerWidth::pointer(Context),
+  auto wordType = BuiltinIntegerType::get(BuiltinIntegerWidth::pointer(),
                                           Context);
   BuiltinGenericSignatureBuilder builder(Context);
   builder.addParameter(makeMetatype(makeGenericParam()));
@@ -614,7 +614,7 @@ static ValueDecl *getDestroyArrayOperation(ASTContext &Context, Identifier Id) {
 }
 
 static ValueDecl *getTransferArrayOperation(ASTContext &Context, Identifier Id){
-  auto wordType = BuiltinIntegerType::get(BuiltinIntegerWidth::pointer(Context),
+  auto wordType = BuiltinIntegerType::get(BuiltinIntegerWidth::pointer(),
                                           Context);
   BuiltinGenericSignatureBuilder builder(Context);
   builder.addParameter(makeMetatype(makeGenericParam()));
@@ -841,7 +841,7 @@ static ValueDecl *getNativeObjectCast(ASTContext &Context, Identifier Id,
 
 static ValueDecl *getCastToBridgeObjectOperation(ASTContext &C,
                                                  Identifier Id) {
-  auto wordType = BuiltinIntegerType::get(BuiltinIntegerWidth::pointer(C),
+  auto wordType = BuiltinIntegerType::get(BuiltinIntegerWidth::pointer(),
                                           C);
   BuiltinGenericSignatureBuilder builder(C);
   builder.addParameter(makeGenericParam(), ValueOwnership::Owned);
@@ -863,7 +863,7 @@ static ValueDecl *getCastFromBridgeObjectOperation(ASTContext &C,
   }
 
   case BuiltinValueKind::CastBitPatternFromBridgeObject: {
-    Type WordTy = BuiltinIntegerType::get(BuiltinIntegerWidth::pointer(C), C);
+    Type WordTy = BuiltinIntegerType::get(BuiltinIntegerWidth::pointer(), C);
     return getBuiltinFunction(Id, { BridgeTy }, WordTy);
   }
 
