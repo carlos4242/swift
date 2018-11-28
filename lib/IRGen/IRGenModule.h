@@ -512,8 +512,8 @@ public:
   llvm::IntegerType *Int8Ty;           /// i8
   llvm::IntegerType *Int16Ty;          /// i16
   llvm::IntegerType *Int32Ty;          /// i32
+  llvm::PointerType *Int32PtrTy;       /// i32 *
   llvm::IntegerType *RelativeAddressTy;
-  llvm::PointerType *Int32PtrTy;            /// i32 *
   llvm::PointerType *RelativeAddressPtrTy;
   llvm::IntegerType *Int64Ty;          /// i64
   union {
@@ -537,7 +537,7 @@ public:
     llvm::PointerType *WitnessTablePtrTy;
   };
   llvm::StructType *RefCountedStructTy;/// %swift.refcounted = type { ... }
-  Size RefCountedStructSize;     /// sizeof(%swift.refcounted)
+  Size RefCountedStructSize;           /// sizeof(%swift.refcounted)
   llvm::PointerType *RefCountedPtrTy;  /// %swift.refcounted*
 #define CHECKED_REF_STORAGE(Name, ...) \
   llvm::PointerType *Name##ReferencePtrTy; /// %swift. #name _reference*
@@ -565,11 +565,11 @@ public:
   llvm::PointerType *ProtocolDescriptorPtrTy; /// %swift.protocol*
   llvm::StructType *ProtocolRequirementStructTy; /// %swift.protocol_requirement
   union {
-    llvm::PointerType *ObjCPtrTy;        /// %objc_object*
+    llvm::PointerType *ObjCPtrTy;      /// %objc_object*
     llvm::PointerType *UnknownRefCountedPtrTy;
   };
-  llvm::PointerType *BridgeObjectPtrTy; /// %swift.bridge*
-  llvm::StructType *OpaqueTy;           /// %swift.opaque
+  llvm::PointerType *BridgeObjectPtrTy;/// %swift.bridge*
+  llvm::StructType *OpaqueTy;          /// %swift.opaque
   llvm::PointerType *OpaquePtrTy;      /// %swift.opaque*
   llvm::StructType *ObjCClassStructTy; /// %objc_class
   llvm::PointerType *ObjCClassPtrTy;   /// %objc_class*
