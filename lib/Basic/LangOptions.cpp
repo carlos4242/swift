@@ -39,6 +39,7 @@ static const StringRef SupportedConditionalCompilationOSs[] = {
   "PS4",
   "Cygwin",
   "Haiku",
+  "Embedded"
 };
 
 static const StringRef SupportedConditionalCompilationArches[] = {
@@ -48,7 +49,8 @@ static const StringRef SupportedConditionalCompilationArches[] = {
   "x86_64",
   "powerpc64",
   "powerpc64le",
-  "s390x"
+  "s390x",
+  "avr"
 };
 
 static const StringRef SupportedConditionalCompilationEndianness[] = {
@@ -221,6 +223,9 @@ std::pair<bool, bool> LangOptions::setTarget(llvm::Triple triple) {
   case llvm::Triple::ArchType::systemz:
     addPlatformConditionValue(PlatformConditionKind::Arch, "s390x");
     break;
+  case llvm::Triple::ArchType::avr:
+    addPlatformConditionValue(PlatformConditionKind::Arch, "avr");
+    break;
   default:
     UnsupportedArch = true;
   }
@@ -251,6 +256,9 @@ std::pair<bool, bool> LangOptions::setTarget(llvm::Triple triple) {
     break;
   case llvm::Triple::ArchType::systemz:
     addPlatformConditionValue(PlatformConditionKind::Endianness, "big");
+    break;
+  case llvm::Triple::ArchType::avr:
+    addPlatformConditionValue(PlatformConditionKind::Endianness, "little");
     break;
   default:
     llvm_unreachable("undefined architecture endianness");
