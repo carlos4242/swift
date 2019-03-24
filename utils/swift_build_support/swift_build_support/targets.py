@@ -178,8 +178,6 @@ class StdlibDeploymentTarget(object):
                 return StdlibDeploymentTarget.Linux.powerpc64le
             elif machine == 's390x':
                 return StdlibDeploymentTarget.Linux.s390x
-            elif machine == 'avr':
-                return StdlibDeploymentTarget.Linux.avr
 
         elif system == 'Darwin':
             if machine == 'x86_64':
