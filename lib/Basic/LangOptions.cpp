@@ -39,6 +39,7 @@ static const StringRef SupportedConditionalCompilationOSs[] = {
   "PS4",
   "Cygwin",
   "Haiku",
+  "Embedded"
 };
 
 static const StringRef SupportedConditionalCompilationArches[] = {
@@ -224,7 +225,8 @@ std::pair<bool, bool> LangOptions::setTarget(llvm::Triple triple) {
     break;
   case llvm::Triple::ArchType::avr:
     addPlatformConditionValue(PlatformConditionKind::Arch, "avr");
-    break;  default:
+    break;
+  default:
     UnsupportedArch = true;
   }
 
