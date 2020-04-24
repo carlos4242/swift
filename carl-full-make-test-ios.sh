@@ -6,6 +6,9 @@ utils/build-script -R -i -t --debug-llvm --debug-swift
 
 exit 0
 
+# try this build command for full debug of swift...
+utils/build-script --clean -d -S --host-target macosx-x86_64 --cross-compile-hosts embedded-avr --extra-cmake-options="-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=AVR -DLLVM_ENABLE_BACKTRACES=Off"
+
 dump from history...
 
 
