@@ -21,3 +21,6 @@
 
 #utils/build-script -t -R --build-swift-static-stdlib TRUE
 utils/build-script -R --build-swift-static-stdlib TRUE
+
+
+time cd build/Ninja-ReleaseAssert+swift-DebugAssert && (cd cmark-macosx-x86_64 && ninja) && (cd llvm-macosx-x86_64 && ninja) && (cd swift-macosx-x86_64 && ninja swift) && (cd llvm-embedded-avr && ninja) && (cd swift-embedded-avr && ninja swift)
