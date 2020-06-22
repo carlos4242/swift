@@ -2992,7 +2992,7 @@ ConstraintSystem::matchTypes(Type type1, Type type2, ConstraintKind kind,
 
                 // The pointer can be converted from a string, if the element
                 // type is compatible.
-                if (type1->isEqual(TC.getStringType(DC))) {
+                if (TC.getStringType(DC)&&type1->isEqual(TC.getStringType(DC))) {
                   auto baseTy = getFixedTypeRecursive(pointeeTy, false);
 
                   if (baseTy->isTypeVariableOrMember() ||
