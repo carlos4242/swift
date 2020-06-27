@@ -2408,16 +2408,16 @@ static void synthesizeStubBody(AbstractFunctionDecl *fn, void *) {
                                    DeclNameLoc(loc),
                                    /*Implicit=*/true);
 
-  llvm::SmallString<64> buffer;
-  StringRef fullClassName = ctx.AllocateCopy(
-                              (classDecl->getModuleContext()->getName().str() +
-                               "." +
-                               classDecl->getName().str()).toStringRef(buffer));
+  // llvm::SmallString<64> buffer;
+  // StringRef fullClassName = ctx.AllocateCopy(
+  //                             (classDecl->getModuleContext()->getName().str() +
+  //                              "." +
+  //                              classDecl->getName().str()).toStringRef(buffer));
 
-  Expr *className = new (ctx) StringLiteralExpr(fullClassName, loc,
-                                                /*Implicit=*/true);
-  Expr *call = CallExpr::createImplicit(ctx, ref, { className },
-                                        { ctx.Id_className });
+  // Expr *className = new (ctx) StringLiteralExpr(fullClassName, loc,
+  //                                               /*Implicit=*/true);
+  Expr *call = CallExpr::createImplicit(ctx, ref, {  },
+                                        { });
   ctor->setBody(BraceStmt::create(ctx, SourceLoc(),
                                   ASTNode(call),
                                   SourceLoc(),
