@@ -5905,7 +5905,8 @@ Address IRGenFunction::createAlloca(llvm::Type *type,
 /// It should be removed when fixed. rdar://problem/22674524
 llvm::Constant *IRGenModule::getAddrOfGlobalString(StringRef data,
                                                bool willBeRelativelyAddressed,
-                                               bool useOSLogSection) {
+                                               bool useOSLogSection,
+                                               bool storeWithFunctionsInTextSegment) {
   useOSLogSection = useOSLogSection &&
     TargetInfo.OutputObjectFormat == llvm::Triple::MachO;
 
@@ -5937,7 +5938,8 @@ llvm::Constant *IRGenModule::getAddrOfGlobalString(StringRef data,
     useOSLogSection ? "__TEXT,__oslogstring,cstring_literals" : "";
 
   entry = createStringConstant(data, willBeRelativelyAddressed,
-                               sectionName, name);
+                              sectionName, name,
+                              storeWithFunctionsInTextSegment);
   return entry.second;
 }
 
