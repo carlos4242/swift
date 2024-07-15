@@ -39,6 +39,9 @@ extension ${intType}: AtomicRepresentable {
 #elseif _pointerBitWidth(_32)
   @available(SwiftStdlib 6.0, *)
   public typealias AtomicRepresentation = _Atomic32BitStorage
+#elseif _pointerBitWidth(_16)
+  @available(SwiftStdlib 6.0, *)
+  public typealias AtomicRepresentation = _Atomic16BitStorage
 #else
 #error("Unsupported platform")
 #endif
@@ -125,6 +128,11 @@ extension Atomic where Value == ${intType} {
       )
 #elseif _pointerBitWidth(_32)
       Builtin.atomicrmw_${atomicOperationName(intType, builtinName)}_${llvmOrder}_Int32(
+        _rawAddress,
+        operand._value
+      )
+#elseif _pointerBitWidth(_16)
+      Builtin.atomicrmw_${atomicOperationName(intType, builtinName)}_${llvmOrder}_Int16(
         _rawAddress,
         operand._value
       )

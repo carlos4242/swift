@@ -771,7 +771,7 @@ extension ObjectIdentifier: AtomicOptionalRepresentable {
 // UnsafeBufferPointer AtomicRepresentable conformance
 //===----------------------------------------------------------------------===//
 
-#if (_pointerBitWidth(_32) && _hasAtomicBitWidth(_64)) || (_pointerBitWidth(_64) && _hasAtomicBitWidth(_128))
+#if ((_pointerBitWidth(_32) || _pointerBitWidth(_16)) && _hasAtomicBitWidth(_64)) || (_pointerBitWidth(_64) && _hasAtomicBitWidth(_128))
 
 @available(SwiftStdlib 6.0, *)
 extension UnsafeBufferPointer: AtomicRepresentable where Element: ~Copyable {
@@ -837,7 +837,7 @@ extension UnsafeBufferPointer: AtomicRepresentable where Element: ~Copyable {
 // UnsafeMutableBufferPointer AtomicRepresentable conformance
 //===----------------------------------------------------------------------===//
 
-#if (_pointerBitWidth(_32) && _hasAtomicBitWidth(_64)) || (_pointerBitWidth(_64) && _hasAtomicBitWidth(_128))
+#if ((_pointerBitWidth(_32) || _pointerBitWidth(_16)) && _hasAtomicBitWidth(_64)) || (_pointerBitWidth(_64) && _hasAtomicBitWidth(_128))
 
 @available(SwiftStdlib 6.0, *)
 extension UnsafeMutableBufferPointer: AtomicRepresentable
@@ -905,7 +905,7 @@ where Element: ~Copyable
 // UnsafeRawBufferPointer AtomicRepresentable conformance
 //===----------------------------------------------------------------------===//
 
-#if (_pointerBitWidth(_32) && _hasAtomicBitWidth(_64)) || (_pointerBitWidth(_64) && _hasAtomicBitWidth(_128))
+#if ((_pointerBitWidth(_32) || _pointerBitWidth(_16)) && _hasAtomicBitWidth(_64)) || (_pointerBitWidth(_64) && _hasAtomicBitWidth(_128))
 
 @available(SwiftStdlib 6.0, *)
 extension UnsafeRawBufferPointer: AtomicRepresentable {
@@ -971,7 +971,7 @@ extension UnsafeRawBufferPointer: AtomicRepresentable {
 // UnsafeMutableRawBufferPointer AtomicRepresentable conformance
 //===----------------------------------------------------------------------===//
 
-#if (_pointerBitWidth(_32) && _hasAtomicBitWidth(_64)) || (_pointerBitWidth(_64) && _hasAtomicBitWidth(_128))
+#if ((_pointerBitWidth(_32) || _pointerBitWidth(_16)) && _hasAtomicBitWidth(_64)) || (_pointerBitWidth(_64) && _hasAtomicBitWidth(_128))
 
 @available(SwiftStdlib 6.0, *)
 extension UnsafeMutableRawBufferPointer: AtomicRepresentable {

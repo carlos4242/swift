@@ -62,7 +62,7 @@ public struct WordPair {
   }
 }
 
-#if (_pointerBitWidth(_32) && _hasAtomicBitWidth(_64)) || (_pointerBitWidth(_64) && _hasAtomicBitWidth(_128))
+#if ((_pointerBitWidth(_32) || _pointerBitWidth(_16)) && _hasAtomicBitWidth(_64)) || (_pointerBitWidth(_64) && _hasAtomicBitWidth(_128))
 
 @available(SwiftStdlib 6.0, *)
 extension WordPair: AtomicRepresentable {
@@ -74,6 +74,10 @@ extension WordPair: AtomicRepresentable {
   /// The storage representation type that `Self` encodes to and decodes from
   /// which is a suitable type when used in atomic operations.
   public typealias AtomicRepresentation = _Atomic64BitStorage
+#elseif _pointerBitWidth(_16)
+  /// The storage representation type that `Self` encodes to and decodes from
+  /// which is a suitable type when used in atomic operations.
+  public typealias AtomicRepresentation = _Atomic32BitStorage
 #else
 #error("Unsupported platform")
 #endif
@@ -110,6 +114,14 @@ extension WordPair: AtomicRepresentable {
     i64 = Builtin.or_Int64(i64, high64)
 
     return AtomicRepresentation(i64)
+#elseif _pointerBitWidth(_16)
+    var i32 = Builtin.zext_Int16_Int32(value.first._value)
+    var high32 = Builtin.zext_Int16_Int32(value.second._value)
+    let highShift = Builtin.zext_Int16_Int32(UInt(16)._value)
+    high32 = Builtin.shl_Int32(high32, highShift)
+    i32 = Builtin.or_Int32(i32, high32)
+
+    return AtomicRepresentation(i32)
 #else
 #error("Unsupported platform")
 #endif
@@ -141,6 +153,11 @@ extension WordPair: AtomicRepresentable {
     let high64 = Builtin.lshr_Int64(representation._storage, highShift)
     let high = Builtin.trunc_Int64_Int32(high64)
     let low = Builtin.trunc_Int64_Int32(representation._storage)
+#elseif _pointerBitWidth(_16)
+    let highShift = Builtin.zext_Int16_Int32(UInt(16)._value)
+    let high32 = Builtin.lshr_Int32(representation._storage, highShift)
+    let high = Builtin.trunc_Int32_Int16(high32)
+    let low = Builtin.trunc_Int32_Int16(representation._storage)
 #else
 #error("Unsupported platform")
 #endif
