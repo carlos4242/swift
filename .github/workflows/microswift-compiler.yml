@@ -1,0 +1,107 @@
+name: Microswift 6.2
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - avr-irgen-functions-respect-llvm-datalayout-2  
+    - avr-mods-5
+    - avr-upstreamable-mods-3
+
+  pull_request:
+    branches:
+    - avr-irgen-functions-respect-llvm-datalayout-2  
+    - avr-mods-5
+    - avr-upstreamable-mods-3
+
+env:
+  # DEVELOPER_DIR: /Applications/Xcode-15.0.1.app/Contents/Developer
+  DEPLOYMENT_LOCAL_SUBDIR: swift-6.2
+  DEPLOYMENT_ZIP: swift-6.2.zip
+  # choices here are (nothing), release-debuginfo, release, debug, R, D
+  # note that (nothing) is the same as release-debuginfo and R is the same as release and D is the same as debug
+  # note that debug only implies --debug-swift because debug llvm is so costly and rarely useful
+  BUILD_TYPE: R
+  # ^^ make release the default... on a faster build server we could make RelWithDebInfoAssert the default
+  # but our server is old and slow and the build time has ballooned up to 2 hours for a RWDIA build!
+  # also we need to try and make the final binaries as small as possible, which isn't helped by doubling up with swift-ide-test
+  # and extra space with the new swift-driver binary
+  DEPLOY_TO_SERVER: true
+
+jobs:
+  build:
+    runs-on: [self-hosted, macOS, ARM64, xcode-16.2, cmake]
+    # Use a commit message starting with ci-skip if you don't want to run a build for some reason.
+    if: ${{ !startsWith(github.event.head_commit.message, 'ci-skip') || github.event_name == 'workflow_dispatch' }}
+
+    steps:
+    - name: Set Environment Variables
+      run: |
+        if [[ "$BUILD_TYPE" = "R" || "$BUILD_TYPE" = "release" ]]
+        then
+          echo "RELEASE_TYPE_FLAGS=release" >> $GITHUB_ENV
+          BUILD_SUBDIR_SUFFIX=ReleaseAssert
+        elif [[ -z "$BUILD_TYPE" || "$BUILD_TYPE" = "release-debuginfo" ]]
+        then
+          echo "RELEASE_TYPE_FLAGS=release-debuginfo" >> $GITHUB_ENV
+          BUILD_SUBDIR_SUFFIX=RelWithDebInfoAssert
+        elif [[ "$BUILD_TYPE" = "D" || "$BUILD_TYPE" = "debug" ]]
+        then
+          echo "RELEASE_TYPE_FLAGS=debug-swift" >> $GITHUB_ENV
+          BUILD_SUBDIR_SUFFIX=ReleaseAssert+debug-swift
+        else
+          echo "UNKNOWN BUILD TYPE"
+        fi
+        echo "BUILT_SWIFT_SUBDIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/swift-macosx-arm64/bin" >> $GITHUB_ENV
+
+        # --- Can be overridden by environment variables set before the GHA runner is run ---
+        [[ -n "$DEVELOPER_DIR" ]] || echo "DEVELOPER_DIR=/Applications/Xcode-16.2.app/Contents/Developer" >> $GITHUB_ENV
+        [[ -n "$COMPILER_OUTPUT_ROOT" ]] || echo "COMPILER_OUTPUT_ROOT=/Volumes/CI-HD/built" >> $GITHUB_ENV
+        [[ -n "$UPLOAD_USERNAME" ]] || echo "UPLOAD_USERNAME=carl" >> $GITHUB_ENV
+        [[ -n "$UPLOAD_SERVER"   ]] || echo "UPLOAD_SERVER=swiftforarduino.com" >> $GITHUB_ENV
+        [[ -n "$UPLOAD_PATH"     ]] || echo "UPLOAD_PATH=web-s4a-private/compilers/" >> $GITHUB_ENV
+
+    - name: Show environment for debugging
+      run: env
+
+    - name: Clean
+      run: rm -rf *
+
+    - uses: actions/checkout@v3
+      with:
+        path: swift
+
+    - name: Checkout related projects and configure
+      run: |
+        swift/checkout-swift-ci.sh
+
+    - name: Build
+      run: |
+        swift/build-swift-ci.sh
+
+# The compiler unit tests for our custom features @realtime and @interruptHandler are currently
+# disabled in this branch because those features have been parked for now, while we synch up with
+# mainstream Swift and the latest embedded features/fixes. We can re-enable them later if/when we
+# re-add the features. However @realtime may no longer be needed as these features can probably be
+# done differently and better with the new Swift experimental embedded features built by Kuba, from
+# the Apple Swift team.
+
+    # - name: Test
+    #   run: |
+    #     swift/ci-unit-test.sh
+
+    - name: Stage
+      if: ${{ github.event_name == 'push' }}
+      continue-on-error: true
+      run: |
+        rm -rf ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_LOCAL_SUBDIR} ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_ZIP}
+        mkdir -p ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_LOCAL_SUBDIR}
+        cp -fa ${BUILT_SWIFT_SUBDIR}/{swift,swift-ide-test,swiftc,swift-frontend,swift-driver} ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_LOCAL_SUBDIR}/
+        cd ${COMPILER_OUTPUT_ROOT}
+        zip --symlinks -r ${DEPLOYMENT_ZIP} ${DEPLOYMENT_LOCAL_SUBDIR}/
+
+    - name: Deploy
+      if: ${{ github.event_name == 'push' }}
+      continue-on-error: true
+      run: |
+        scp ${COMPILER_OUTPUT_ROOT}/${DEPLOYMENT_ZIP} ${UPLOAD_USERNAME}@${UPLOAD_SERVER}:${UPLOAD_PATH}          
