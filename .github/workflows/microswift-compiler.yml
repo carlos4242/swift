@@ -1,23 +1,25 @@
-name: Microswift 6.2
+name: Microswift 6.3
 
 on:
   workflow_dispatch:
   push:
     branches:
+    - avr-irgen-functions-respect-llvm-datalayout-3
     - avr-irgen-functions-respect-llvm-datalayout-2  
     - avr-mods-5
     - avr-upstreamable-mods-3
 
   pull_request:
     branches:
+    - avr-irgen-functions-respect-llvm-datalayout-3
     - avr-irgen-functions-respect-llvm-datalayout-2  
     - avr-mods-5
     - avr-upstreamable-mods-3
 
 env:
   # DEVELOPER_DIR: /Applications/Xcode-15.0.1.app/Contents/Developer
-  DEPLOYMENT_LOCAL_SUBDIR: swift-6.2
-  DEPLOYMENT_ZIP: swift-6.2.zip
+  DEPLOYMENT_LOCAL_SUBDIR: swift-6.3
+  DEPLOYMENT_ZIP: swift-6.3.zip
   # choices here are (nothing), release-debuginfo, release, debug, R, D
   # note that (nothing) is the same as release-debuginfo and R is the same as release and D is the same as debug
   # note that debug only implies --debug-swift because debug llvm is so costly and rarely useful
