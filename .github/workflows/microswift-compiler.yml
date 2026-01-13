@@ -56,6 +56,7 @@ jobs:
         fi
         echo "BUILT_SWIFT_SUBDIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/swift-macosx-arm64/bin" >> $GITHUB_ENV
         echo "BUILT_SWIFT_DIR=build/Ninja-${BUILD_SUBDIR_SUFFIX}/swift-macosx-arm64" >> $GITHUB_ENV
+        (/usr/bin/which -s sccache && echo "SCCACHE_FLAG=--sccache" || echo "SCCACHE_FLAG=") >> tmp.txt
 
         # --- Can be overridden by environment variables set before the GHA runner is run ---
         [[ -n "$DEVELOPER_DIR" ]] || echo "DEVELOPER_DIR=/Applications/Xcode-16.2.app/Contents/Developer" >> $GITHUB_ENV
