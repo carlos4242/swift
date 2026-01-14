@@ -8,7 +8,7 @@ testConstantSizeBuffer.memory[0] = 19
 
 // CHECK: target triple = "avr-none-none-elf"
 // CHECK: @"$e4main22testConstantSizeBuffer_Wz" = protected global i16 0, align 2
-// CHECK: define protected noundef i32 @main
+// CHECK: define protected i32 @main(i32 %0, ptr %1) addrspace(1)
 
 // in our stdlib we would have
 // tail call addrspace(1) void @swift_once(ptr nonnull @"$e4main22testConstantSizeBuffer_Wz", ptr addrspacecast (ptr addrspace(1) @"$e4main22testConstantSizeBuffer_WZ" to ptr), ptr undef)

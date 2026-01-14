@@ -4,7 +4,9 @@
 // REQUIRES: CODEGENERATOR=AVR
 // REQUIRES: swift_feature_Embedded
 
+public typealias StringLiteralType = StaticString
+
 let testString = "Hello, World!"
 
-// CHECK: @.str.1.- = private unnamed_addr addrspace(1) constant [2 x i8] c"-\00"
+// CHECK: addrspace(1) constant [14 x i8] c"Hello, World!\00"
 
