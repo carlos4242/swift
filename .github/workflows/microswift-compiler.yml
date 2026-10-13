@@ -42,7 +42,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: [self-hosted, macOS, xcode-16.2, cmake]
+    runs-on: [self-hosted, macOS, xcode-26, cmake]
     # Use a commit message starting with ci-skip if you don't want to run a build for some reason.
     if: ${{ !startsWith(github.event.head_commit.message, 'ci-skip') || github.event_name == 'workflow_dispatch' }}
 
@@ -76,7 +76,7 @@ jobs:
         # usr/lib/sourcekitd.framework
 
         # --- Can be overridden by environment variables set before the GHA runner is run ---
-        [[ -n "$DEVELOPER_DIR" ]] || echo "DEVELOPER_DIR=/Applications/Xcode-16.2.app/Contents/Developer" >> $GITHUB_ENV
+        [[ -n "$DEVELOPER_DIR" ]] || echo "DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer" >> $GITHUB_ENV
         [[ -n "$COMPILER_OUTPUT_ROOT" ]] || echo "COMPILER_OUTPUT_ROOT=/tmp/built" >> $GITHUB_ENV
         [[ -n "$UPLOAD_SERVER"   ]] || echo "UPLOAD_SERVER=swiftforarduino.com" >> $GITHUB_ENV
         [[ -n "$UPLOAD_PATH"     ]] || echo "UPLOAD_PATH=/web-private/compilers/" >> $GITHUB_ENV
